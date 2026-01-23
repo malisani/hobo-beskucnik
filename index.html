@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HOBO BESKUĆNIK - Official Page</title>
+    
+    <link rel="icon" type="image/png" href="Hobo beskućnik glava.png">
+
+    <style>
+        /* UKLANJANJE SKROLANJA NA CIJELOJ STRANICI */
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+        }
+
+        body { 
+            background-image: url('pozadina.png');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            font-family: "Times New Roman", serif;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* SLOJ PRLJAVŠTINE */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(circle, #000 1px, transparent 1px),
+                radial-gradient(circle, #333 1px, transparent 1px);
+            background-size: 80px 80px, 150px 150px;
+            background-position: 0 0, 40px 40px;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* GLAVNI KONTEJNER - Prilagođava se visini ekrana */
+        .hobo-container {
+            background-color: #c0c0c0;
+            border: 3px outset #ffffff;
+            width: 95vw;
+            max-width: 850px;
+            height: 90vh; /* Zauzima 90% visine mobitela */
+            max-height: 580px;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.6);
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+        }
+
+        marquee {
+            background: #000; 
+            color: #ffff00; 
+            padding: 4px;
+            font-weight: bold; 
+            border: 2px inset #ffffff;
+            flex-shrink: 0;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 2px;
+            padding: 5px 5px 0 5px;
+            flex-shrink: 0;
+        }
+
+        .hobo-tab {
+            flex: 1;
+            padding: 8px 0;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #404040;
+            background: #c0c0c0;
+            color: #000;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .hobo-tab.active { 
+            background: #ffffff !important; 
+            border-bottom: 2px solid #ffffff; 
+            margin-bottom: -2px; 
+            z-index: 2; 
+        }
+        
+        .hobo-tab.active[data-tab="pocetna"] { color: #0000ff; }
+        .hobo-tab.active[data-tab="likovi"] { background: #ffff00 !important; color: #000; }
+
+        /* UNUTRAŠNJI FRAME - Jedino mjesto gdje je skrolanje dozvoljeno ako sadržaj ne stane */
+        .content-frame {
+            background: #ffffff;
+            margin: 0 5px 5px 5px;
+            padding: 15px;
+            border: 2px inset #ffffff;
+            flex-grow: 1;
+            overflow-y: auto; 
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-pane { display: none; width: 100%; }
+        .tab-pane.active { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+        h1 { color: #ff0000; font-size: 22px; text-decoration: underline; margin: 10px 0; }
+
+        .status-badge {
+            background: #ffff00; border: 2px solid #000; padding: 4px 12px;
+            font-weight: bold; margin-bottom: 10px;
+            box-shadow: 3px 3px 0px #000; font-size: 12px;
+        }
+
+        .main-character-img, .logo-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 200px; /* Ograničena visina slike da ne gura gumbe van */
+            border: 2px solid #000;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        ul.char-list { list-style: none; padding: 0; margin: 0; text-align: left; }
+        ul.char-list li { margin-bottom: 10px; font-size: 15px; line-height: 1.2; }
+        ul.char-list b { color: #b00; }
+
+        .dl-button {
+            background: #c0c0c0; color: #ff0000; padding: 12px 20px;
+            text-decoration: none; font-weight: bold; font-size: 16px;
+            border-top: 3px solid #ffffff; border-left: 3px solid #ffffff;
+            border-right: 3px solid #404040; border-bottom: 3px solid #404040;
+            display: inline-block; margin-top: 10px;
+        }
+
+        .instruction-box {
+            border: 2px dashed #000; background: #f9f9f9;
+            padding: 10px; width: 100%; margin-top: 10px;
+            box-sizing: border-box; font-size: 12px; text-align: left;
+        }
+
+        footer {
+            flex-shrink: 0;
+            padding: 5px;
+            color: #ffffff;
+            font-size: 18px;
+            text-shadow: 2px 2px 0px #000;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* PC VERZIJA - VEĆI FONTOVI */
+        @media (min-width: 600px) {
+            .hobo-tab { font-size: 14px; }
+            h1 { font-size: 28px; }
+            .hobo-container { width: 850px; height: 580px; }
+            .main-character-img { max-height: 250px; }
+            .status-badge { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hobo-container">
+        <marquee scrollamount="5">*** DOBRODOŠLI NA SLUŽBENI PORTAL - HOBO BESKUĆNIK 2026 ***</marquee>
+
+        <div class="tab-bar">
+            <div class="hobo-tab active" data-tab="pocetna" onclick="showTab(this, 'pocetna')">POČETNA</div>
+            <div class="hobo-tab" data-tab="likovi" onclick="showTab(this, 'likovi')">LIKOVI</div>
+            <div class="hobo-tab" data-tab="malisani" onclick="showTab(this, 'malisani')">O NAMA</div>
+            <div class="hobo-tab" data-tab="skin" onclick="showTab(this, 'skin')">SKIN</div>
+        </div>
+
+        <div class="content-frame">
+            <div id="pocetna" class="tab-pane active">
+                <div class="status-badge">STATUS: NA ULICI</div>
+                <h1>HOBO BESKUĆNIK</h1>
+                <img src="Hobo beskućnik u koloru.png" class="main-character-img" alt="Hobo">
+                <p style="margin: 0; font-weight: bold;">Službeni portal Mališani produkcije.</p>
+            </div>
+
+            <div id="likovi" class="tab-pane">
+                <h1>DOSJE: LIKOVI</h1>
+                <ul class="char-list">
+                    <li><b>• Hobo beskućnik</b> - Beskućnik koji gleda svačije poslove samo ne svoje.</li>
+                    <li><b>• Baba</b> - Čangrizava konobarica i kartašica stare garde.</li>
+                    <li><b>• Hobin pas</b> - Pas koji samo mokrit zna.</li>
+                </ul>
+            </div>
+
+            <div id="malisani" class="tab-pane">
+                <h1>MALIŠANI PRODUKCIJA</h1>
+                <img src="Mališani produkcija logo.png" class="logo-img" alt="Mališani Logo">
+                <p style="font-weight: bold;">Kreativni tim iz sjene.</p>
+                <p>Uvijek na rubu zakona, ali s dobrom pričom.</p>
+            </div>
+
+            <div id="skin" class="tab-pane">
+                <div class="status-badge">GOOGLE CHROME</div>
+                <h1>DOWNLOAD</h1>
+                <a href="Hobo_Beskućnik_Chrome_Skin.zip" class="dl-button">PREUZMI ZIP</a>
+                
+                <div class="instruction-box">
+                    <b>INSTALACIJA:</b>
+                    <ol style="margin: 5px 0; padding-left: 20px;">
+                        <li>Raspakiraj ZIP.</li>
+                        <li>Idi na <b>chrome://extensions/</b></li>
+                        <li>Upali <b>Developer mode</b>.</li>
+                        <li>Klikni <b>Load unpacked</b>.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 Mališani</footer>
+
+    <script>
+        function showTab(el, id) {
+            var tabs = document.getElementsByClassName('hobo-tab');
+            for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+            var panes = document.getElementsByClassName('tab-pane');
+            for (var i = 0; i < panes.length; i++) panes[i].classList.remove('active');
+            el.classList.add('active');
+            document.getElementById(id).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
